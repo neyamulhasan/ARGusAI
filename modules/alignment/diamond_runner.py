@@ -95,6 +95,10 @@ class DiamondRunner(AlignmentTool):
         if local_binary.exists():
             return str(local_binary)
 
+        local_unix_binary = Path("diamond")
+        if local_unix_binary.exists():
+            return str(local_unix_binary)
+
         diamond_on_path = shutil.which("diamond")
         if diamond_on_path:
             return diamond_on_path

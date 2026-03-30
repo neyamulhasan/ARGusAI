@@ -24,20 +24,28 @@ frontend/{index.html, app.js, api.js, styles.css}
 
 1. Python 3.10+
 2. DIAMOND executable available either:
-   - as `diamond.exe` in the project root, or
+   - as `diamond.exe` (Windows) or `diamond` (Linux/macOS) in the project root, or
    - in system `PATH` as `diamond`
 3. A built DIAMOND database, for example `card_db.dmnd`
 
 ## Setup
 
-```bash
+Windows (PowerShell):
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+copy .env.example .env
 ```
 
-Copy environment template:
+Linux/macOS (bash/zsh):
 
 ```bash
-copy .env.example .env
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
 ```
 
 ## Run API + Frontend
