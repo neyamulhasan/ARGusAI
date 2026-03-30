@@ -8,43 +8,45 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException
 
 from api.job_store import job_store
 from api.models import ProcessRequest, ProcessResponse
-from config import settings
-from modules.alignment.diamond_runner import DiamondRunner
+from modules.pipeline.runner import PipelineRunner
 
 logger = logging.getLogger(__name__)
 router = APIRouter(tags=["process"])
 
 
-def _run_alignment_job(job_id: str, evalue: float, program: str) -> None:
-    """Background task: run alignment and store hits."""
+def _run_pipeline_job(job_id: str, evalue: float, program: str) -> None:
+    """Background task: run full pipeline and store results."""
 
     record = job_store.get(job_id)
     if record is None:
         return
 
+    logger.info("Job %s started (program=%s, evalue=%s)", job_id, program, evalue)
     job_store.update(job_id, status="running", stage="alignment")
     try:
-        runner = DiamondRunner(
-            database_path=settings.DIAMOND_DB_PATH,
-            threads=settings.DIAMOND_THREADS,
+        def _update_stage(stage: str) -> None:
+            job_store.update(job_id, stage=stage)
+            logger.info("Job %s stage -> %s", job_id, stage)
+
+        runner = PipelineRunner()
+        result = runner.run(
+            run_id=job_id,
+            fasta_path=record.fasta_path,
+            fasta_filename=record.filename,
             evalue=evalue,
             program=program,
-            max_hits=settings.MAX_HITS,
+            stage_callback=_update_stage,
         )
-        hits = runner.run(record.fasta_path)
 
-        serialized_hits = [
-            {
-                "gene_id": h.gene_id,
-                "identity_pct": h.identity_pct,
-                "e_value": h.e_value,
-                "alignment_score": h.alignment_score,
-                "raw_subject_id": h.raw_subject_id,
-            }
-            for h in hits
-        ]
-        job_store.update(job_id, status="complete", stage="alignment_complete", hits=serialized_hits)
-        logger.info("Job %s completed with %d hits", job_id, len(serialized_hits))
+        job_store.update(
+            job_id,
+            status="complete",
+            stage="complete",
+            hits=result.hits,
+            report=result.report,
+            text_summary=result.text_summary,
+        )
+        logger.info("Job %s completed with %d hits", job_id, len(result.hits))
     except Exception as exc:
         logger.exception("Job %s failed", job_id)
         job_store.update(job_id, status="error", stage="alignment", error=str(exc))
@@ -52,7 +54,7 @@ def _run_alignment_job(job_id: str, evalue: float, program: str) -> None:
 
 @router.post("/process/{job_id}", response_model=ProcessResponse)
 async def process_job(job_id: str, request: ProcessRequest, tasks: BackgroundTasks) -> ProcessResponse:
-    """Queue background alignment processing for uploaded FASTA."""
+    """Queue background RAG pipeline processing for uploaded FASTA."""
 
     record = job_store.get(job_id)
     if record is None:
@@ -64,6 +66,7 @@ async def process_job(job_id: str, request: ProcessRequest, tasks: BackgroundTas
     if record.status == "running":
         raise HTTPException(status_code=409, detail="Job is already running")
 
-    tasks.add_task(_run_alignment_job, job_id, request.evalue, request.program)
+    tasks.add_task(_run_pipeline_job, job_id, request.evalue, request.program)
     job_store.update(job_id, status="pending", stage="queued", error=None)
-    return ProcessResponse(job_id=job_id, status="pending", message="Alignment job queued")
+    logger.info("Job %s queued", job_id)
+    return ProcessResponse(job_id=job_id, status="pending", message="Pipeline job queued")

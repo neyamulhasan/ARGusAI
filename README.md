@@ -1,13 +1,15 @@
-# ARG Detection Framework (Alignment Milestone)
+# ARG Detection Framework (RAG Pipeline)
 
-This repository is now rebuilt to match `INSTRUCTIONS.md` up to the completed milestone:
+This repository now implements an end-to-end ARG detection pipeline with retrieval and reasoning:
 
 - Modular alignment backend (`modules/alignment/`)
+- CARD retrieval module (`modules/retrieval/`)
+- Prompt engineering module (`modules/prompt_engineering/`)
+- LLM reasoning and validation (`modules/llm_reasoning/`)
+- Report generation (`modules/report_generation/`)
+- End-to-end orchestration (`modules/pipeline/`)
 - FastAPI upload/process/status/results API (`api/`)
 - Framework-free frontend dashboard (`frontend/`)
-
-Scope intentionally stops at the DIAMOND alignment tool. Retrieval, prompt-engineering,
-LLM reasoning, and report-generation modules are not implemented in this milestone.
 
 ## Implemented Structure
 
@@ -50,14 +52,15 @@ Open frontend in browser:
 
 - `http://127.0.0.1:8000/frontend/index.html`
 
-## API Endpoints (Alignment Only)
+## API Endpoints
 
 - `POST /upload` - upload `.fasta`, `.fa`, `.fna`, `.txt`
-- `POST /process/{job_id}` - run DIAMOND alignment in background
+- `POST /process/{job_id}` - run full RAG pipeline in background
 - `GET /status/{job_id}` - check job state
-- `GET /results/{job_id}` - fetch candidate hits after completion
+- `GET /results/{job_id}` - fetch candidate hits, validation output, and report data
 
 ## Notes
 
-- `ALIGNMENT_TOOL` is config-driven, but only DIAMOND execution is implemented in this milestone.
-- BLAST runner is a placeholder to preserve module-swappability.
+- DIAMOND is the active alignment runner in this implementation.
+- If no configured LLM is available, validation gracefully falls back to a heuristic validator.
+- To use Gemini reasoning, set `GEMINI_API_KEY` and keep `LLM_PROVIDER=gemini`.

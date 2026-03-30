@@ -15,6 +15,8 @@ class JobRecord:
     stage: str = "uploaded"
     error: str | None = None
     hits: list[dict] = field(default_factory=list)
+    report: dict | None = None
+    text_summary: str | None = None
 
 
 class JobStore:

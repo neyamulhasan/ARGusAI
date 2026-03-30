@@ -35,6 +35,10 @@ class HitResponse(BaseModel):
     e_value: float
     alignment_score: float
     raw_subject_id: str
+    is_valid_hit: bool = False
+    confidence: int = 0
+    resistance_summary: str = ""
+    drug_impacts: list[str] = Field(default_factory=list)
 
 
 class ResultsResponse(BaseModel):
@@ -42,3 +46,5 @@ class ResultsResponse(BaseModel):
     status: str
     total_hits: int
     hits: list[HitResponse]
+    report: dict[str, object] | None = None
+    text_summary: str | None = None

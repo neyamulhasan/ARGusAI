@@ -684,6 +684,65 @@ select option {
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.outputs-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.output-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.output-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.output-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+  color: var(--text-secondary);
+}
+
+.output-pre {
+  white-space: pre-wrap;
+  font-size: 12.5px;
+  line-height: 1.55;
+  max-height: 260px;
+  overflow: auto;
+  color: var(--text-primary);
+}
+
+.output-pre.mono {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--accent-indigo);
+}
+
+.download-btn {
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.08);
+  color: var(--accent-sky);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.download-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -774,6 +833,78 @@ tbody td:nth-child(5) {
   white-space: nowrap;
 }
 
+tbody td:nth-child(6) {
+  min-width: 150px;
+}
+
+tbody td:nth-child(7) {
+  min-width: 230px;
+}
+
+.validation-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.validation-pill.valid {
+  color: #86efac;
+  border-color: rgba(52, 211, 153, 0.32);
+  background: rgba(52, 211, 153, 0.12);
+}
+
+.validation-pill.invalid {
+  color: #fca5a5;
+  border-color: rgba(248, 113, 113, 0.35);
+  background: rgba(248, 113, 113, 0.12);
+}
+
+.reasoning-details {
+  color: var(--text-secondary);
+}
+
+.reasoning-details summary {
+  cursor: pointer;
+  color: var(--accent-sky);
+  font-size: 12px;
+  font-weight: 600;
+  list-style: none;
+}
+
+.reasoning-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.reasoning-details summary::after {
+  content: " +";
+}
+
+.reasoning-details[open] summary::after {
+  content: " -";
+}
+
+.reasoning-body {
+  margin-top: 8px;
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.reasoning-body p {
+  margin: 0;
+}
+
+.reasoning-body strong {
+  color: var(--text-primary);
+}
+
 /* ---------- Empty State ---------- */
 .empty-state {
   display: flex;
@@ -824,6 +955,10 @@ tbody td:nth-child(5) {
     grid-template-columns: 1fr;
   }
   .status-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .outputs-grid {
     grid-template-columns: 1fr;
   }
 }

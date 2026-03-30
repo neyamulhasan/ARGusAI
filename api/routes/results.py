@@ -40,4 +40,6 @@ async def get_results(job_id: str) -> ResultsResponse:
         status=record.status,
         total_hits=len(record.hits),
         hits=record.hits,
+        report=record.report,
+        text_summary=record.text_summary,
     )
