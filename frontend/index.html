@@ -329,7 +329,13 @@
       const fileInput = document.getElementById('fastaFile');
       const dropContent = document.getElementById('dropContent');
 
-      dropZone.addEventListener('click', () => fileInput.click());
+      dropZone.addEventListener('click', (e) => {
+        // The hidden input already receives native clicks; avoid opening the picker twice.
+        if (e.target !== fileInput) {
+          fileInput.click();
+        }
+      });
+      fileInput.addEventListener('click', (e) => e.stopPropagation());
       dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
       dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
       dropZone.addEventListener('drop', e => {
